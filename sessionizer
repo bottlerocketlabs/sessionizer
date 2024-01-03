@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 
 PROJECTS_BASE="${HOME}/src"
-DATABASE="${HOME}/.project.db"
+# DATABASE="${HOME}/.project.db"
 
 function search_database {
     # concatenate sources of path data, remove undesired suffixes
-    cat <(locate --database="${DATABASE}" -r "\.git$") <(echo "${HOME}") | sed 's/\.git$//'
+    # cat <(locate --database="${DATABASE}" -r "\.git$") <(echo "${HOME}") | sed 's/\.git$//'
+    cat <(fd '.git$' "${PROJECTS_BASE}" --prune -u --type d -x echo "{//}") <(echo "${HOME}")
 }
 
-function update_database {
-    updatedb --localpaths="${PROJECTS_BASE}" --output="${DATABASE}" 2>/dev/null &
-}
+# function update_database {
+#     updatedb --localpaths="${PROJECTS_BASE}" --output="${DATABASE}" 2>/dev/null
+# }
 
 function find_projects {
     QUERY=""
@@ -28,7 +29,7 @@ function tmux_sessionizer {
         tmux new-session -ds "${selected_name}" -c "${selected}"
     fi
     tmux switch-client -t "${selected_name}"
-    update_database
+    # update_database
 }
 
 function zellij_sessionizer {  
@@ -41,7 +42,7 @@ function zellij_sessionizer {
         cd "${selected}" || break
         zellij attach --create "${selected_name}"
         echo "detach/quit session ${selected_name}"
-        update_database
+        # update_database
     done
 }
 
